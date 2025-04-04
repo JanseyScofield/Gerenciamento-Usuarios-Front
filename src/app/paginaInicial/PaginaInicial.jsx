@@ -5,15 +5,30 @@ import { useState, useEffect } from "react";
 export const PaginaInicial = () => {
     const urlApi = "https://localhost:7100/usuarios";
     const [usuarios, setUsuarios] = useState([]);
+    const [requestOK, setRequestOk] =  useState();
     const [nomePesquisado, setNomePesquisado] = useState("");
 
     const receberTodosUsuarios = () =>{
         axios.get(urlApi)
             .then((response) => {
-                setUsuarios(response.data.listaUsuarios);
+                if(response.data.listaUsuarios.length == 0){
+                    const mensagem = "Não há usuarios cadastrados";
+
+                    const usuariosNaoCadastrados = {
+                        id : -1,
+                        nome : mensagem,
+                        email : "",
+                        idade : ""
+                    };
+                    setUsuarios([usuariosNaoCadastrados]);
+                }
+                else{
+                    setUsuarios(response.data.listaUsuarios);
+                }
+                setRequestOk(true);
             })
             .catch((error) => {
-                console.error(error);
+                setRequestOk(false);
             });
     }
 
@@ -28,12 +43,10 @@ export const PaginaInicial = () => {
             .then((response) => {
                 setUsuarios([response.data]);
             })  
-            .catch((error) =>{
-                const mensagem = "Usuário não encontrado";
-
+            .catch(() =>{
                 const usuarioNaoEncontrado = {
                     id : -1,
-                    nome : mensagem,
+                    nome : "Usuario não encontrado",
                     email : "",
                     idade : ""
                 };
@@ -57,9 +70,10 @@ export const PaginaInicial = () => {
                 <button className="btn btn-lg border h-100" onClick={pesquisarUsuarioNome}><i className="bi bi-search"></i></button>
             </div>
             <section className="border rounded p-5 mt-4 shadow-lg" style={{ maxHeight: '700px', overflowY: 'auto' }}>
-                {usuarios.map((usuario) => {
-                    return <InfoUsuario key={usuario.id} nome={usuario.nome} email={usuario.email} idade={usuario.idade} />
-                })}
+                { requestOK ? 
+                    usuarios.map(usuario =>  <InfoUsuario key={usuario.id} nome={usuario.nome} email={usuario.email} idade={usuario.idade} />) :
+                    <h2>Erro ao carregar os usuários</h2>
+                }
             </section>
         </section>
     );
