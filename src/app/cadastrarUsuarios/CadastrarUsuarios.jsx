@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export const CadastrarUsuarios = () => {
+    const urlApi = "https://localhost:7100/usuarios";
     const navigate = useNavigate();
     const [nomeUsuario, setNomeUsuario] = useState("");
     const [emailUsuario, setEmailUsuario] = useState("");
-    const [idadeUsuario, setIdadeUsuario] = useState(0);
+    const [idadeUsuario, setIdadeUsuario] = useState("");
 
     const validarFormulario = () =>{
         if(nomeUsuario.length <= 2){
@@ -24,6 +26,29 @@ export const CadastrarUsuarios = () => {
         }
     }
 
+    const limparFormulario = () =>{
+        setNomeUsuario("");
+        setEmailUsuario("");
+        setIdadeUsuario("");   
+    }
+
+    const cadastrarUsuario = () => {
+        validarFormulario();
+
+        const requestCadastrar = {
+            nome: nomeUsuario,
+            email: emailUsuario,
+            idade: idadeUsuario
+        };
+
+        axios.post(urlApi, requestCadastrar)
+        .then(() => {
+            limparFormulario();
+            alert("Cadastro realizado com sucesso!");
+        })
+        .catch(error => alert("Erro no cadastro:" + error));
+    }
+
     return(
         <section className="container d-flex flex-column justify-content-center align-items-center">
             <h1 className="text-center">Cadastrar Usuário</h1>
@@ -36,7 +61,7 @@ export const CadastrarUsuarios = () => {
                         <input type="email" className="form-control-lg shadow-sm" id="email" value={emailUsuario} onChange={e => setEmailUsuario(e.target.value)}/>
                         <label htmlFor="idade" className="form-label p-2 fs-4">Idade</label>
                         <input type="number" className="form-control-lg shadow-sm" id="idade" value={idadeUsuario} onChange={e => setIdadeUsuario(e.target.value)}/>
-                        <button type="button" onClick={validarFormulario} className="btn mt-3 btn-lg border h-100 shadow-sm">Cadastrar</button>
+                        <button type="button" onClick={cadastrarUsuario} className="btn mt-3 btn-lg border h-100 shadow-sm">Cadastrar</button>
                     </div>
                 </form>
             </div>
