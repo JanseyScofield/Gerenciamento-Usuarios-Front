@@ -12,18 +12,20 @@ export const CadastrarUsuarios = () => {
     const validarFormulario = () =>{
         if(nomeUsuario.length <= 2){
             alert("Nome inválido, digite novamente.");
-            return;
+            return false;
         }
 
         if(emailUsuario.length <= 2){
             alert("E-mail inválido, digite novamente.");
-            return;
+            return false;
         }
 
         if(idadeUsuario <= 0){
             alert("Idade inválida, digite novamente.");
-            return;
+            return false;
         }
+
+        return true;
     }
 
     const limparFormulario = () =>{
@@ -33,7 +35,7 @@ export const CadastrarUsuarios = () => {
     }
 
     const cadastrarUsuario = () => {
-        validarFormulario();
+        if(!validarFormulario()) return;
 
         const requestCadastrar = {
             nome: nomeUsuario,
